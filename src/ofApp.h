@@ -10,6 +10,7 @@ public:
 		int	 soundID;
 		bool bHit;
 		int teamID;
+		int score;
 };
 
 class ofApp : public ofBaseApp{
@@ -47,6 +48,7 @@ class ofApp : public ofBaseApp{
 		// yuta
 		int groundBoxNumber;
 		vector<ofPtr<ofxBox2dRect> > groundBoxes, humanBoxes;
+		ofTrueTypeFont font;
 		float groundBoxWidth;
 		float groundBoxHeight;
 };

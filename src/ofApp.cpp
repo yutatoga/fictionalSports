@@ -54,9 +54,10 @@ void ofApp::setup(){
 				SoundData * sd = (SoundData*)rect2->getData();
 				sd->soundID = 4;
 				sd->teamID = (int)ofRandom(0, 10)%2;
-				ofLogNotice(ofToString(sd->teamID));
 				sd->bHit	= false;
+				sd->score = 0;
 		}
+		font.loadFont("digital-7_mono.ttf", 24, true, true);
 }
 
 //--------------------------------------------------------------
@@ -72,6 +73,7 @@ void ofApp::contactStart(ofxBox2dContactArgs &e) {
 
 						if(aData) {
 								aData->bHit = true;
+								aData->score++;
 								sound.play();
 						}
 						
@@ -123,12 +125,6 @@ void ofApp::draw(){
 				groundTimer = ofGetElapsedTimef();
 				for(int i=n-1; i>=1; i--) {
 						groundLine[i].y = groundLine[i-1].y;
-						if(i%2){
-								ofSetColor(32, 127, 32);
-						}else{
-								ofSetColor(35, 130, 35);
-						}
-						ofRect(groundBoxes[i].get()->getPosition().x-0.5*groundBoxWidth, groundLine[i-1].y, groundBoxWidth, ofGetHeight());
 						groundBoxes[i].get()->setPosition(groundBoxes[i].get()->getPosition().x, groundLine[i-1].y);
 						ofSetColor(255, 0, 0);
 						if (i > n*0.5) {
@@ -138,15 +134,12 @@ void ofApp::draw(){
 						}
 				}
 				groundLine[0].y = newHeight;
-				ofSetColor(35, 130, 35);
-				ofRect(groundBoxes[0].get()->getPosition().x-0.5*groundBoxWidth, newHeight, groundBoxWidth, ofGetHeight());
 				groundBoxes[0].get()->setPosition(groundBoxes[0].get()->getPosition().x, newHeight);
 				humanBoxes[0].get()->setPosition(groundBoxes[0].get()->getPosition().x, ofGetHeight()+groundBoxHeight); // hide
 		}
 		ofSetColor(255);
 		ground.updateShape();
 		ground.draw();
-		
 		
 		string info = "";
 		info += "Press [c] for circles\n";
@@ -178,6 +171,9 @@ void ofApp::draw(){
 						ofSetColor(35, 130, 35);
 				}
 				groundBoxes[i].get()->draw();
+				
+				// decoration
+				ofRect(groundBoxes[i].get()->getPosition().x-0.5*groundBoxWidth, groundBoxes[i].get()->getPosition().y, groundBoxWidth, ofGetHeight());
 		}
 		
 		for (int i=0; i<humanBoxes.size(); i++){
@@ -193,7 +189,16 @@ void ofApp::draw(){
 						}
 				}
 				humanBoxes[i].get()->draw();
+				// score label
+				ofSetColor(255);
+				SoundData * sd = (SoundData*)humanBoxes[i].get()->getData();
+				string scoreString = ofToString(sd->score);
+				if (humanBoxes[i].get()->getPosition().y < ofGetHeight()) {
+						font.drawString(scoreString, humanBoxes[i].get()->getPosition().x-font.getStringBoundingBox(scoreString, 0, 0).width/2.0, ofGetHeight()-30);
+				}
 		}
+		
+		
 }
 
 //--------------------------------------------------------------
